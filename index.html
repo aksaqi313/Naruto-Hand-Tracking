@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Naruto Jutsu Simulator — Hand Tracking</title>
+    <meta name="description"
+        content="Real-time Naruto jutsu simulator using AI hand tracking. Activate Rasengan, Chidori, Fireball, Shadow Clone and more!" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Exo+2:wght@300;400;600;800&display=swap"
+        rel="stylesheet" />
+</head>
+
+<body>
+
+    <!-- ─── Ambient background ─── -->
+    <div class="bg-overlay"></div>
+    <div class="kunai-bg" id="kunaiBg"></div>
+
+    <!-- ─── Full-screen jutsu flash ─── -->
+    <div class="jutsu-banner" id="jutsuBanner">
+        <div class="banner-inner">
+            <div class="banner-kanji" id="bannerKanji"></div>
+            <div class="banner-text" id="bannerText"></div>
+            <div class="banner-sub" id="bannerSub"></div>
+        </div>
+    </div>
+
+    <!-- ─── Shockwave canvas (full-screen) ─── -->
+    <canvas id="shockCanvas"></canvas>
+
+    <!-- ─── Header ─── -->
+    <header class="site-header">
+        <div class="logo">
+            <span class="logo-icon">忍</span>
+            <div class="logo-words">
+                <span class="logo-title">Naruto Jutsu <em>Simulator</em></span>
+                <span class="logo-sub">Hidden Leaf Village · AI Hand Tracking</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="rank-badge" id="rankBadge">
+                <span class="rank-icon" id="rankIcon">🌿</span>
+                <span class="rank-name" id="rankName">Genin</span>
+            </div>
+            <div class="village-badge">Konohagakure</div>
+        </div>
+    </header>
+
+    <!-- ─── Main Arena ─── -->
+    <main class="arena">
+
+        <!-- ── Camera + Canvas ── -->
+        <div class="camera-container" id="cameraContainer">
+            <video id="webcam" autoplay playsinline muted></video>
+            <canvas id="outputCanvas"></canvas>
+
+            <!-- Jutsu GIF overlays -->
+            <img id="rasenganOverlay" class="jutsu-overlay" src="assets/rasengan.gif" alt="Rasengan" />
+            <img id="chidoriOverlay" class="jutsu-overlay" src="assets/chidori.gif" alt="Chidori" />
+            <img id="fireballOverlay" class="jutsu-overlay" src="assets/rasengan.gif" alt="Fireball"
+                style="filter:hue-rotate(200deg) saturate(2) brightness(1.2)" />
+            <img id="cloneOverlay" class="jutsu-overlay" src="assets/chidori.gif" alt="Clone"
+                style="filter:hue-rotate(100deg) saturate(1.5)" />
+            <img id="summonOverlay" class="jutsu-overlay" src="assets/rasengan.gif" alt="Summoning"
+                style="filter:hue-rotate(260deg) saturate(2)" />
+
+            <!-- Corner seals -->
+            <div class="corner tl">◈</div>
+            <div class="corner tr">◈</div>
+            <div class="corner bl">◈</div>
+            <div class="corner br">◈</div>
+
+            <!-- Combo flash overlay -->
+            <div class="combo-flash" id="comboFlash"></div>
+
+            <!-- Camera status -->
+            <div class="cam-status" id="camStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Starting camera…</span>
+            </div>
+
+            <!-- Charge meter (arc) -->
+            <div class="charge-arc" id="chargeArc">
+                <svg viewBox="0 0 120 120" id="chargeArcSvg">
+                    <circle class="charge-track" cx="60" cy="60" r="50" />
+                    <circle class="charge-fill" cx="60" cy="60" r="50" id="chargeCircle" />
+                </svg>
+                <div class="charge-label" id="chargeLabel">0%</div>
+            </div>
+        </div>
+
+        <!-- ── Side Panel ── -->
+        <aside class="side-panel">
+
+            <!-- Jutsu card -->
+            <div class="jutsu-card" id="jutsuCard">
+                <div class="jutsu-label">Current Jutsu</div>
+                <div class="jutsu-emoji" id="jutsuEmoji">🥷</div>
+                <div class="jutsu-name" id="jutsuName">— Stand By —</div>
+                <div class="jutsu-sub" id="jutsuSub">Show your hand to activate</div>
+                <!-- Charge bar -->
+                <div class="charge-wrap">
+                    <div class="charge-bar-bg">
+                        <div class="charge-bar-fill" id="chargeBarFill"></div>
+                    </div>
+                    <span class="charge-pct" id="chargePct">0%</span>
+                </div>
+            </div>
+
+            <!-- Rank + XP -->
+            <div class="rank-section">
+                <div class="rank-row">
+                    <span class="rank-icon-lg" id="rankIconLg">🌿</span>
+                    <div class="rank-info">
+                        <div class="rank-title" id="rankTitle">Genin</div>
+                        <div class="rank-xp-row">
+                            <span class="rank-xp" id="rankXp">0 XP</span>
+                            <span class="rank-next" id="rankNext">→ 50 XP for Chunin</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="xp-bar-bg">
+                    <div class="xp-bar-fill" id="xpFill"></div>
+                </div>
+            </div>
+
+            <!-- Chakra meter -->
+            <div class="chakra-section">
+                <div class="chakra-header">
+                    <span>⚡ Chakra</span>
+                    <span id="chakraPercent">100%</span>
+                </div>
+                <div class="chakra-bar-bg">
+                    <div class="chakra-bar-fill" id="chakraFill"></div>
+                    <div class="chakra-glow" id="chakraGlow"></div>
+                </div>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="info-grid">
+                <div class="info-cell">
+                    <div class="info-label">Hands</div>
+                    <div class="info-value" id="handCount">0</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-label">Gesture</div>
+                    <div class="info-value" id="gestureLabel">—</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-label">Jutsus</div>
+                    <div class="info-value" id="jutsuCount">0</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-label">FPS</div>
+                    <div class="info-value" id="fpsValue">--</div>
+                </div>
+            </div>
+
+            <!-- Jutsu guide (5 jutsus) -->
+            <div class="guide-card">
+                <div class="guide-title">✋ Jutsu Hand Signs</div>
+                <div class="guide-row" id="guide-rasengan">
+                    <div class="guide-icon">🔵</div>
+                    <div>
+                        <div class="guide-name">Rasengan</div>
+                        <div class="guide-desc">Open palm · all 4 fingers up</div>
+                    </div>
+                </div>
+                <div class="guide-row" id="guide-chidori">
+                    <div class="guide-icon">⚡</div>
+                    <div>
+                        <div class="guide-name">Chidori</div>
+                        <div class="guide-desc">Index finger only pointing</div>
+                    </div>
+                </div>
+                <div class="guide-row" id="guide-fireball">
+                    <div class="guide-icon">🔥</div>
+                    <div>
+                        <div class="guide-name">Fireball</div>
+                        <div class="guide-desc">Rock/Horns · index + pinky up</div>
+                    </div>
+                </div>
+                <div class="guide-row" id="guide-shadowclone">
+                    <div class="guide-icon">👥</div>
+                    <div>
+                        <div class="guide-name">Shadow Clone</div>
+                        <div class="guide-desc">Peace/V sign · index + middle</div>
+                    </div>
+                </div>
+                <div class="guide-row" id="guide-summoning">
+                    <div class="guide-icon">🐸</div>
+                    <div>
+                        <div class="guide-name">Summoning</div>
+                        <div class="guide-desc">Thumbs up · thumb extended</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History log -->
+            <div class="history-card">
+                <div class="history-title">📜 Jutsu Log</div>
+                <ul class="history-list" id="historyList">
+                    <li class="history-empty">No jutsus cast yet…</li>
+                </ul>
+            </div>
+
+        </aside>
+    </main>
+
+    <!-- MediaPipe CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <script src="effects.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
