@@ -475,8 +475,10 @@ function setOverlay(gesture, palmCenter, canvasRect) {
     const meta = JUTSU_META[gesture];
     if (!meta || !palmCenter) return;
 
-    const ox = (1 - palmCenter.x) * canvasRect.width + canvasRect.left;
-    const oy = palmCenter.y * canvasRect.height + canvasRect.top;
+    // Overlays are absolutely positioned inside `.camera-container` (not the page),
+    // so use container-relative coordinates (and mirror X to match the flipped video).
+    const ox = (1 - palmCenter.x) * canvasRect.width;
+    const oy = palmCenter.y * canvasRect.height;
     const el = $(meta.overlayId);
     el.style.left = `${ox}px`;
     el.style.top = `${oy}px`;
@@ -546,7 +548,7 @@ function onResults(results) {
         updateChakra(primaryGesture);
 
         if (primaryGesture !== GESTURE.NONE) {
-            const rect = videoEl.getBoundingClientRect();
+            const rect = cameraContainer.getBoundingClientRect();
             setOverlay(primaryGesture, handsData[0].palmCenter, rect);
 
             // First trigger event at 30 frames of hold
@@ -562,10 +564,6 @@ function onResults(results) {
 
                 // Shockwave at full charge
                 if (handsData[0].palmCenter) {
-                    const rect = videoEl.getBoundingClientRect();
-                    const px = (1 - handsData[0].palmCenter.x) * rect.width + rect.left;
-                    const py = handsData[0].palmCenter.y * rect.height + rect.top;
-                    // map back to canvas coords
                     const cx = handsData[0].palmCenter.x * canvasEl.width;
                     const cy = handsData[0].palmCenter.y * canvasEl.height;
                     const meta = JUTSU_META[primaryGesture];

@@ -9,8 +9,10 @@ A real-time Naruto jutsu simulator powered by **MediaPipe Hands** (Google) runni
 | Gesture | Jutsu | How To |
 |---|---|---|
 | 🖐️ Open Palm | **Rasengan** | Hold all 4 fingers extended toward the camera |
-| ☝️ Pointing Finger | **Chidori** | Extend only your index finger |
-| ✊ Closed Fist | **Chakra Focus** | Curl all fingers into a fist |
+| ☝️ Pointing Finger | **Chidori** | Extend only your index finger (other fingers curled) |
+| 🤘 Horns | **Fireball** | Index + pinky up (middle + ring curled) |
+| ✌️ Peace/V | **Shadow Clone** | Index + middle up (ring + pinky curled) |
+| 👍 Thumbs Up | **Summoning** | Thumb up with all other fingers curled |
 
 ---
 
