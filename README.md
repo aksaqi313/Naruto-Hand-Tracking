@@ -1,84 +1,46 @@
-# 🍃 Naruto Jutsu Simulator — Hand Tracking
+# Naruto Hand Tracking
 
-A real-time Naruto jutsu simulator powered by **MediaPipe Hands** (Google) running entirely in the browser. No backend needed — pure HTML + CSS + JavaScript.
+## Overview
+This project implements a robust hand tracking solutions based on the Naruto character visualization.
 
----
+## Getting Started
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/aksaqi313/Naruto-Hand-Tracking.git
+   cd Naruto-Hand-Tracking
+   ```
+2. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## ✋ Gesture Controls
-
-| Gesture | Jutsu | How To |
-|---|---|---|
-| 🖐️ Open Palm | **Rasengan** | Hold all 4 fingers extended toward the camera |
-| ☝️ Pointing Finger | **Chidori** | Extend only your index finger (other fingers curled) |
-| 🤘 Horns | **Fireball** | Index + pinky up (middle + ring curled) |
-| ✌️ Peace/V | **Shadow Clone** | Index + middle up (ring + pinky curled) |
-| 👍 Thumbs Up | **Summoning** | Thumb up with all other fingers curled |
-
----
-
-## 🚀 Quick Start
-
-### Requirements
-- [Node.js](https://nodejs.org/) (v14+) — for the local server
-- A modern browser (Chrome, Edge, Firefox)
-- A webcam
-
-### Installation & Run
-
+## Usage
+Run the application using:
 ```bash
-# 1. Install dependencies
-npm install
-
-# 2. Start the local server (auto-opens browser)
-npm start
+python main.py
 ```
 
-The app will open at **http://localhost:3000** automatically.
+## Troubleshooting
+- **Issue: The application crashes on startup**
+  - **Solution:** Ensure all dependencies are correctly installed. Try running `pip install -r requirements.txt` again.
 
-> ⚠️ **Important:** The app MUST be served from a local HTTP server (not opened directly as a file). Browsers block webcam access and CDN scripts on `file://` URLs.
+- **Issue: Hand detection is inaccurate**
+  - **Solution:** Check the lighting in your environment. Make sure the camera is positioned correctly and that there are no obstructions.
 
----
+- **Issue: Performance is laggy**
+  - **Solution:** Lower the resolution of the input video feed for better performance.
 
-## 📁 Project Structure
+## Contributing
+Contributions are welcome! Please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes.
+4. Submit a pull request.
 
-```
-naruto-hand-tracking/
-│
-├── index.html       ← Main UI structure
-├── style.css        ← Dark ninja theme & animations
-├── script.js        ← MediaPipe integration & gesture logic
-├── effects.js       ← Particle effects engine (Rasengan / Chidori)
-├── package.json     ← Node.js project config
-└── assets/
-    ├── rasengan.gif ← Rasengan visual overlay
-    └── chidori.gif  ← Chidori visual overlay
-```
+## Performance Tips
+- **Lighting:** Good lighting will greatly enhance hand detection accuracy.
+- **Resolution:** Lowering the video feed resolution can improve processing speed.
+- **System Specifications:** Ensure your system meets the recommended specifications for better performance.
 
----
-
-## 🔧 How It Works
-
-1. **MediaPipe Hands** detects 21 hand landmarks per hand in real time via CDN
-2. **Gesture Classifier** (`script.js`) analyzes finger extension ratios to identify Rasengan / Chidori / Fist
-3. **Effect Engine** (`effects.js`) renders canvas particle systems (orbital chakra spheres, lightning arcs) on top of the webcam feed
-4. **GIF Overlays** are positioned over the detected palm center for each jutsu
-
----
-
-## 🌐 Tech Stack
-
-| Technology | Purpose |
-|---|---|
-| MediaPipe Hands (CDN) | Real-time hand landmark detection |
-| HTML5 Canvas | Particle effect rendering |
-| Vanilla CSS | Animations, dark theme, glassmorphism |
-| JavaScript ES6+ | Gesture logic, UI state management |
-| http-server (npm) | Local development server |
-
----
-
-## 💡 Tips
-
-- Use in a **well-lit room** for best detection accuracy
-- Keep your hand **30–60 cm** from the camera
-- Chrome gives best performance for MediaPipe WebAssembly
+## License
+This project is licensed under the MIT License.
