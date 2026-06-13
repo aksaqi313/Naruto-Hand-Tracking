@@ -162,37 +162,6 @@ body {
   gap: 12px;
 }
 
-.refresh-btn {
-  background: linear-gradient(135deg, var(--orange), var(--orange-lt));
-  border: 1px solid rgba(255, 107, 0, .4);
-  color: #fff;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 12px rgba(255, 107, 0, .3);
-  font-weight: 600;
-}
-
-.refresh-btn:hover {
-  box-shadow: 0 0 24px rgba(255, 107, 0, .6);
-  transform: scale(1.05);
-}
-
-.refresh-btn:active {
-  transform: scale(0.95);
-}
-
-.refresh-btn.spinning {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 .rank-badge {
   display: flex;
   align-items: center;

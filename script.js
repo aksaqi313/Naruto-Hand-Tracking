@@ -1,18 +1,12 @@
 /**
  * script.js v2 — Enhanced Naruto Jutsu Simulator
  * 5 jutsus · Charge system · Web Audio SFX · Rank/XP · History log
- * Features: Gesture recognition, auto-refresh on error, touch & mouse input support
  */
 'use strict';
 
 /* ═══════════════════════════════════════════
-   CONSTANTS & CONFIG
+   CONSTANTS
 ═══════════════════════════════════════════ */
-
-// Auto-refresh settings
-const AUTO_REFRESH = true;        // Enable auto-refresh on camera error
-const AUTO_REFRESH_DELAY = 5000;  // Retry after 5 seconds
-
 const GESTURE = {
     NONE: 'none',
     RASENGAN: 'rasengan',
@@ -614,15 +608,7 @@ function spawnKunai() {
 /* ═══════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════ */
-
-let cameraInstance = null;
-let handInstance = null;
-let autoRefreshTimeout = null;
-
 async function init() {
-    // Clear any pending auto-refresh
-    if (autoRefreshTimeout) clearTimeout(autoRefreshTimeout);
-    
     spawnKunai();
     updateRank(0); // Init rank display
 
@@ -642,7 +628,6 @@ async function init() {
     });
 
     hands.onResults(onResults);
-    handInstance = hands;
 
     try {
         statusText.textContent = 'Requesting camera…';
@@ -661,58 +646,12 @@ async function init() {
             width: 1280, height: 720,
         });
         camera.start();
-        cameraInstance = camera;
 
     } catch (err) {
         console.error(err);
         statusDot.className = 'status-dot error';
-        const retryMsg = AUTO_REFRESH ? ` (Retrying in ${AUTO_REFRESH_DELAY/1000}s…)` : ` — Click 🔄 to retry`;
-        statusText.textContent = `Camera error: ${err.message}${retryMsg}`;
-        
-        // Auto-refresh on error
-        if (AUTO_REFRESH) {
-            autoRefreshTimeout = setTimeout(() => {
-                console.log('Auto-refreshing camera…');
-                init();
-            }, AUTO_REFRESH_DELAY);
-        }
+        statusText.textContent = `Camera error: ${err.message}`;
     }
 }
-
-function resetCamera() {
-    const refreshBtn = $('refreshBtn');
-    if (cameraInstance) {
-        try { cameraInstance.stop(); } catch (e) { }
-        cameraInstance = null;
-    }
-    if (videoEl.srcObject) {
-        videoEl.srcObject.getTracks().forEach(t => t.stop());
-        videoEl.srcObject = null;
-    }
-    
-    refreshBtn.classList.add('spinning');
-    init().then(() => {
-        refreshBtn.classList.remove('spinning');
-    }).catch(err => {
-        refreshBtn.classList.remove('spinning');
-        statusText.textContent = `Retry failed: ${err.message}`;
-    });
-}
-
-const refreshBtn = $('refreshBtn');
-if (refreshBtn) {
-    refreshBtn.addEventListener('click', resetCamera);
-}
-
-// Keyboard shortcuts for refresh
-document.addEventListener('keydown', (e) => {
-    if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey) {
-        resetCamera();
-    }
-    if (e.key === 'F5' || e.key === 'F12') {
-        // Allow normal refresh
-        return;
-    }
-});
 
 document.addEventListener('DOMContentLoaded', init);
